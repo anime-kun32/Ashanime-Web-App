@@ -1,5 +1,5 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyBhIAg9-ZmVbHy-Vb3W1SXShzJPzw2EK50",
+	apiKey: "AIzaSyBhIAg9-ZmVbHy-Vb3W1SXShzJPzw2EK50",
   authDomain: "ash-anime-f94a6.firebaseapp.com",
   projectId: "ash-anime-f94a6",
   storageBucket: "ash-anime-f94a6.appspot.com",
