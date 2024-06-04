@@ -7,7 +7,7 @@ import {
   signInAnonymously,
 } from "firebase/auth";
 import { setUser } from "../redux/google-slice";
-import { firebaseConfig } from "./firebaseConfig";
+import { firebaseConfig } from "./firebaseConfig.js";
 
 const envValue = process.env.REACT_APP_FIREBASE_CONFIG;
 
