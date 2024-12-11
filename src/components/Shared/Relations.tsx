@@ -34,7 +34,7 @@ const Relations = ({ getAnimeDetails, setModalId, data, local }: props) => {
       dispatch(searchLoadingAction(true));
       const getSearch = async () => {
         await axios
-          .get(` https://ashanime-api.vercel.app/meta/anilist/${title}`, {
+          .get(` https://anime-kun32.vercel.app/meta/anilist/${title}`, {
             params: {
               pagePage: 25,
             },
