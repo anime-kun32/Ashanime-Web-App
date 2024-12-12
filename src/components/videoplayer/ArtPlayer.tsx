@@ -59,29 +59,26 @@ export default function Player({ option, getInstance }: any) {
     );
   };
 
-  // loop over episodeObject.sources and create an array of objects with the url and the video quality
-  const handleVideoQualities = () => {
-    return streamEpisodeLinkObject.sources.map((source: any) => {
-      if (source.quality === "backup") {
-        return {
-          default: true,
-          url: source.url,
-          html: source.quality,
-        };
-      } else {
-        if (source.quality)
-          return {
-            url: source.url,
-            html: source.quality,
-          };
-        else
-          return {
-            url: source.url,
-            html: "Adaptive",
-          };
-      }
-    });
-  };
+const handleVideoQualities = () => {
+  return streamEpisodeLinkObject.sources.map((source) => {
+    // Modify the URL to include the player parameter
+    const modifiedUrl = `https://gogoanime-and-hianime-proxy.vercel.app/hls-proxy?url=${source.url}`;
+
+    // Check for a specific condition to return "Adaptive" or other qualities
+    if (source.quality === "Adaptive") {
+      return {
+        url: source.url, // Original URL for adaptive
+        html: "Adaptive",
+      };
+    } else {
+      return {
+        url: modifiedUrl,
+        html: source.quality,
+      };
+    }
+  });
+};
+
 
   const handleFontSize = () => {
     if (winWidth <= 900) {
