@@ -96,7 +96,7 @@ export default function ModalStream({
     readUserDataProvider();
     await axios
       .get(
-        `https://ashanime-api.vercel.app/meta/anilist/info/${modalId}${
+        `https://anime-kun32.vercel.app/meta/anilist/info/${modalId}${
           provider === "gogoanime" || "zoro" ? "?fetchFiller=true" : ""
         }`,
         {
