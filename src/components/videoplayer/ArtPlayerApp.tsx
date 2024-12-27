@@ -36,31 +36,42 @@ const ArtPlayer = (props: props) => {
     (state: RootState) => state.videoState.streamProvider
   );
 
-  const getEpisodeStream = async () => {
-    setLoading(true);
-    await axios
-      .get(
-        `https://anime-kun32.vercel.app/meta/anilist/watch/${streamEpisode.id}`,
-        {
-          params: {
-            ...(provider && { provider }),
-          },
-        }
-      )
-      .then((response) => {
-        const { data } = response;
-        setEpisodeObject(data);
-        dispatch(setStreamEpisodeLinkObject(data));
-        dispatch(setVideoLink(data.sources[0].url));
-        setLoading(false);
-      })
-      .catch((error) => {
-        if (error) {
-          console.log(error.response);
-        }
-        return;
-      });
-  };
+  
+const getEpisodeStream = async () => {
+  setLoading(true);
+  try {
+    const response = await axios.get(
+      `https://anime-kun32.vercel.app/meta/anilist/watch/${streamEpisode.id}`,
+      {
+        params: {
+          ...(provider && { provider }),
+        },
+      }
+    );
+
+    const data = response.data;
+
+    // Modify the sources to use the proxy
+    const proxiedSources = data.sources.map((source: any) => ({
+      ...source,
+      url: `https://gogoanime-and-hianime-proxy.vercel.app/hls-proxy?url=${encodeURIComponent(source.url)}`,
+    }));
+
+    // Update the episode object with proxied sources
+    const updatedData = {
+      ...data,
+      sources: proxiedSources,
+    };
+
+    setEpisodeObject(updatedData); // Update local state
+    dispatch(setStreamEpisodeLinkObject(updatedData)); // Update Redux state
+    dispatch(setVideoLink(proxiedSources[0].url)); // Set the video link
+  } catch (error: any) {
+    console.error("Error fetching episode stream:", error.response || error);
+  } finally {
+    setLoading(false); // Ensure loading state is updated
+  }
+};
 
   useEffect(() => {
     const getData = async () => {
