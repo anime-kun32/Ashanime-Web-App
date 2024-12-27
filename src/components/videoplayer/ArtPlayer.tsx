@@ -22,11 +22,6 @@ export default function Player({ option, getInstance }: any) {
     (state: RootState) => state.videoState.videoLink
   );
 
-  // Modify videoLink to use the proxy URL
-  const modifiedVideoLink = streamEpisodeLinkObject.sources.map((source: any) => {
-    return source.url ?https://gogoanime-and-hianime-proxy.vercel.app/hls-proxy?url=${source.url}` : null;
-  }).filter(Boolean); // Filter out any null values
-
   const provider = useSelector(
     (state: RootState) => state.videoState.streamProvider
   );
@@ -58,30 +53,30 @@ export default function Player({ option, getInstance }: any) {
       >
         <path
           fill="white"
-          d="M0 96C0 60.7 28.7 32 64 32H512c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM200 208c14.2 0  6.1 35.8 16c8.8 9.9 24 10.7 33.9 1.9s10.7-24 1.9-33.9c-17.5-19.6-43.1-32-71.5-32c-53 0-96 43-96 96s43 96 96 96c28.4 0 54-12.4 71.5-32c8.8-9.9 8-25-1.9-33.9s-25-8-33.9 1.9c-8.8 9.9-21.6 16-35.8 16c-26.5 0-48-21.5-48-48s21.5-48 48-48zm144 48c0-26.5 21.5-48 48-48c14.2 0 27 6.1 35.8 16c8.8 9.9 24 10.7 33.9 1.9s10.7-24 1.9-33.9c-17.5-19.6-43.1-32-71.5-32c-53 0-96 43-96 96s43 96 96 96c28.4 0 54-12.4 71.5-32c8.8-9.9 8-25-1.9-33.9s-25-8-33.9 1.9c-8.8 9.9-21.6 16-35.8 16c-26.5 0-48-21.5-48-48z"
+          d="M0 96C0 60.7 28.7 32 64 32H512c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM200 208c14.2 0 27 6.1 35.8 16c8.8 9.9 24 10.7 33.9 1.9s10.7-24 1.9-33.9c-17.5-19.6-43.1-32-71.5-32c-53 0-96 43-96 96s43 96 96 96c28.4 0 54-12.4 71.5-32c8.8-9.9 8-25-1.9-33.9s-25-8-33.9 1.9c-8.8 9.9-21.6 16-35.8 16c-26.5 0-48-21.5-48-48s21.5-48 48-48zm144 48c0-26.5 21.5-48 48-48c14.2 0 27 6.1 35.8 16c8.8 9.9 24 10.7 33.9 1.9s10.7-24 1.9-33.9c-17.5-19.6-43.1-32-71.5-32c-53 0-96 43-96 96s43 96 96 96c28.4 0 54-12.4 71.5-32c8.8-9.9 8-25-1.9-33.9s-25-8-33.9 1.9c-8.8 9.9-21.6 16-35.8 16c-26.5 0-48-21.5-48-48z"
         />
       </svg>
     );
   };
 
   // loop over episodeObject.sources and create an array of objects with the url and the video quality
-  const handleVideQualities = () => {
+  const handleVideoQualities = () => {
     return streamEpisodeLinkObject.sources.map((source: any) => {
       if (source.quality === "backup") {
         return {
           default: true,
-          url: modifiedVideoLink[3], // Use backup URL
+          url: source.url,
           html: source.quality,
         };
       } else {
         if (source.quality)
           return {
-            url: modifiedVideoLink.find((link: string) => link.includes(source.quality)) || source.url,
+            url: source.url,
             html: source.quality,
           };
         else
           return {
-            url: modifiedVideoLink[2], // Use default URL
+            url: source.url,
             html: "Adaptive",
           };
       }
@@ -123,7 +118,7 @@ export default function Player({ option, getInstance }: any) {
       subtitles.push({
         html: "Show Subs",
         icon: "",
- switch: true,
+        switch: true,
         onSwitch: function (item: any) {
           art.subtitle.show = !item.switch;
           return !item.switch;
@@ -172,7 +167,7 @@ export default function Player({ option, getInstance }: any) {
             bottom: "60px",
             right: "20px",
             opacity: "1.0",
-            padding: "12p 20px",
+            padding: "12px 20px",
             borderRadius: "8px",
             backgroundColor: "#FC4747",
             color: "white",
@@ -204,7 +199,7 @@ export default function Player({ option, getInstance }: any) {
       ],
       container: artRef.current,
 
-      url: modifiedVideoLink[2], // Use default video link
+      url: videoLink,
       customType: {
         m3u8: function (video: HTMLMediaElement, url: string) {
           if (Hls.isSupported()) {
@@ -219,7 +214,7 @@ export default function Player({ option, getInstance }: any) {
           }
         },
       },
-      autoSize:,
+      autoSize: false,
       autoOrientation: true,
       title: modalData.title.romaji,
       volume: 0.5,
@@ -266,7 +261,40 @@ export default function Player({ option, getInstance }: any) {
             return item.html;
           },
         },
+        // {
+        //   html: "Switcher",
+        //   icon: '<img width="22" heigth="22" src="/assets/img/state.svg">',
+        //   tooltip: "OFF",
+        //   switch: false,
+        //   onSwitch: function (item: any) {
+        //     item.tooltip = item.switch ? "OFF" : "ON";
+        //     console.info(
+        //       "You clicked on the custom switch",
+        //       item.switch
+        //     );
+        //     return !item.switch;
+        //   },
+        // },
+        // {
+        //   html: "Slider",
+        //   icon: '<img width="22" heigth="22" src="/assets/img/state.svg">',
+        //   tooltip: "5x",
+        //   // range: [5, 1, 10, 0.1],
+        //   onRange: function (item: any) {
+        //     return item.range + "x";
+        //   },
+        // },
       ],
+      // contextmenu: [
+      //   {
+      //     html: "Custom menu",
+      //     click: function (contextmenu: any) {
+      //       console.info("You clicked on the custom menu");
+      //       contextmenu.show = false;
+      //     },
+      //   },
+      // ],
+
       quality: [handleVideoQualities()],
       thumbnails: {
         url: "",
@@ -275,7 +303,7 @@ export default function Player({ option, getInstance }: any) {
       },
       subtitle: {
         url: streamEpisodeLinkObject.subtitles
-          ? streamEpisodeLinkObj.subtitles[sIndex].url
+          ? streamEpisodeLinkObject.subtitles[sIndex].url
           : "",
         type: "vtt",
         encoding: "utf-8",
@@ -286,7 +314,7 @@ export default function Player({ option, getInstance }: any) {
           color: "#ffffff",
           "font-size": handleFontSize(),
           "text-shadow":
-            "rgb(0, 0, 0) 4px 0px 0px, rgb(0, 0, 0) 3.87565px 0.989616px 0px, rgb(0, 0, 0) 3.51033px 1.9177px 0px, rgb(0, 0, 0) 2.92676px 2.72656px 0px, rgb(0, 0, 0) 2.16121px 3.36588px 0px, rgb(0, 0, 0) 1.26129px 3.79594px 0px, rgb(0, 0, 0) 0.282949px 3.98998px 0px, rgb(0, 0, 0) -0.712984px 3.93594px 0px, rgb(0, 0, 0) -1.66459px 3.63719px 0px, rgb(0, 0, 0) -2.51269px 3.11229px 0px, rgb(0, 0, 0) -3.20457px 2.39389px 0px, rgb(0, 0, 0) -3.69721px 1.52664px 0px, rgb(0, 0, 0) -3.95997px 0.56448px 0px, rgb(, 0, 0) -3.97652px -0.432781px 0px, rgb(0, 0, 0) -3.74583px -1.40313px 0px, rgb(0, 0, 0) -3.28224px -2.28625px 0px, rgb(0, 0, 0) -2.61457px -3.02721px 0px, rgb(0, 0, 0) -1.78435px -3.57996px 0px, rgb(0, 0, 0) -0.843183px -3.91012px 0px, rgb(0, 0, 0) 0.150409px -3.99717px 0px, rgb(0, 0, 0) 1.13465px -3.8357px 0px, rgb(0, 0, 0) 2.04834px -3.43574px 0px, rgb(0, 0, 0) 2.83468px -2.82216px 0px, rgb(0, 0, 0) 3.44477px -2.03312px 0px, rgb(0, 0, 0) 3.84068px -1.11766px 0px, rgb(0, 0, 0) 3.9978px -0.132717px 0px",
+            "rgb(0, 0, 0) 4px 0px 0px, rgb(0, 0, 0) 3.87565px 0.989616px 0px, rgb(0, 0, 0) 3.51033px 1.9177px 0px, rgb(0, 0, 0) 2.92676px 2.72656px 0px, rgb(0, 0, 0) 2.16121px 3.36588px 0px, rgb(0, 0, 0) 1.26129px 3.79594px 0px, rgb(0, 0, 0) 0.282949px 3.98998px 0px, rgb(0, 0, 0) -0.712984px 3.93594px 0px, rgb(0, 0, 0) -1.66459px 3.63719px 0px, rgb(0, 0, 0) -2.51269px 3.11229px 0px, rgb(0, 0, 0) -3.20457px 2.39389px 0px, rgb(0, 0, 0) -3.69721px 1.52664px 0px, rgb(0, 0, 0) -3.95997px 0.56448px 0px, rgb(0, 0, 0) -3.97652px -0.432781px 0px, rgb(0, 0, 0) -3.74583px -1.40313px 0px, rgb(0, 0, 0) -3.28224px -2.28625px 0px, rgb(0, 0, 0) -2.61457px -3.02721px 0px, rgb(0, 0, 0) -1.78435px -3.57996px 0px, rgb(0, 0, 0) -0.843183px -3.91012px 0px, rgb(0, 0, 0) 0.150409px -3.99717px 0px, rgb(0, 0, 0) 1.13465px -3.8357px 0px, rgb(0, 0, 0) 2.04834px -3.43574px 0px, rgb(0, 0, 0) 2.83468px -2.82216px 0px, rgb(0, 0, 0) 3.44477px -2.03312px 0px, rgb(0, 0, 0) 3.84068px -1.11766px 0px, rgb(0, 0, 0) 3.9978px -0.132717px 0px",
         },
       },
       icons: {
@@ -296,10 +324,12 @@ export default function Player({ option, getInstance }: any) {
     });
 
     art.on("subtitleUpdate", (text: string) => {
+      //art.template.$subtitle.innerHTML.replaceAll('<p>', '').replaceAll('</p>', ' ').replaceAll('&lt;i&gt;', '<i>').replaceAll('&lt;/i&gt;', '</i>').replaceAll('&lt;b&gt;', '<b>').replaceAll('&lt;/b&gt;', '</b>')
       art.template.$subtitle.innerHTML = text
         .replaceAll("<p>", "")
         .replaceAll("</p>", " ")
-        .replaceAll("&lt;i&gt;", "<i        .replaceAll("&lt;/i&gt;", "</i>")
+        .replaceAll("&lt;i&gt;", "<i>")
+        .replaceAll("&lt;/i&gt;", "</i>")
         .replaceAll("&lt;b&gt;", "<b>")
         .replaceAll("&lt;/b&gt;", "</b>");
     });
@@ -341,7 +371,7 @@ export default function Player({ option, getInstance }: any) {
               //@ts-ignore
               art.subtitle.switch(item.url, {
                 //@ts-ignore
-                name: item.ht,
+                name: item.html,
               });
               return item.html;
             }
@@ -366,7 +396,7 @@ export default function Player({ option, getInstance }: any) {
 
     streamEpisodeLinkObject.sources.map((source: any) => {
       if (source.quality === "backup") {
-        art.switchQuality(modifiedVideoLink[3]); // Use backup URL
+        art.switchQuality(source.url);
       }
     });
 
@@ -392,7 +422,7 @@ export default function Player({ option, getInstance }: any) {
       const selectEnglish = function (item: any) {
         if (item.html === "English") {
           //@ts-ignore
-          art.subtitle?.switch(item.u, {
+          art.subtitle?.switch(item.url, {
             //@ts-ignore
             name: item.html,
           });
@@ -447,7 +477,7 @@ export default function Player({ option, getInstance }: any) {
     }
 
     art.on("pause", () => {
-      art.layers.title.style. = "block";
+      art.layers.title.style.display = "block";
     });
 
     art.on("play", () => {
