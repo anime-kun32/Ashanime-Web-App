@@ -54,7 +54,7 @@ const getEpisodeStream = async () => {
     // Modify the sources to use the proxy
     const proxiedSources = data.sources.map((source: any) => ({
       ...source,
-      url: `https://gogoanime-and-hianime-proxy.vercel.app/hls-proxy?url=${encodeURIComponent(source.url)}`,
+      url: `https://gogoanime-and-hianime-proxy-nn.vercel.app/hls-proxy?url=${encodeURIComponent(source.url)}`,
     }));
 
     // Update the episode object with proxied sources
